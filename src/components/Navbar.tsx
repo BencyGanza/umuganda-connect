@@ -52,6 +52,17 @@ export const Navbar = ({ isAuthenticated = false }: NavbarProps) => {
                     Dashboard
                   </Button>
                 </Link>
+                <Link to="/projects">
+                  <Button variant="ghost" size="sm">
+                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    Projects
+                  </Button>
+                </Link>
+                <Link to="/donations">
+                  <Button variant="ghost" size="sm">
+                    Donate
+                  </Button>
+                </Link>
                 <Link to="/submit-report">
                   <Button variant="default" size="sm">
                     <Plus className="w-4 h-4 mr-2" />
@@ -60,7 +71,6 @@ export const Navbar = ({ isAuthenticated = false }: NavbarProps) => {
                 </Link>
                 <Link to="/profile">
                   <Button variant="ghost" size="sm">
-                    <LayoutDashboard className="w-4 h-4 mr-2" />
                     Profile
                   </Button>
                 </Link>
@@ -71,6 +81,15 @@ export const Navbar = ({ isAuthenticated = false }: NavbarProps) => {
               </>
             ) : (
               <>
+                <Link to="/dashboard">
+                  <Button variant="ghost">Reports</Button>
+                </Link>
+                <Link to="/projects">
+                  <Button variant="ghost">Projects</Button>
+                </Link>
+                <Link to="/donations">
+                  <Button variant="ghost">Donate</Button>
+                </Link>
                 <Link to="/auth">
                   <Button variant="ghost">Sign In</Button>
                 </Link>
@@ -102,6 +121,17 @@ export const Navbar = ({ isAuthenticated = false }: NavbarProps) => {
                     Dashboard
                   </Button>
                 </Link>
+                <Link to="/projects" onClick={() => setIsOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    Projects
+                  </Button>
+                </Link>
+                <Link to="/donations" onClick={() => setIsOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    Donate
+                  </Button>
+                </Link>
                 <Link to="/submit-report" onClick={() => setIsOpen(false)}>
                   <Button variant="default" className="w-full justify-start">
                     <Plus className="w-4 h-4 mr-2" />
@@ -110,7 +140,6 @@ export const Navbar = ({ isAuthenticated = false }: NavbarProps) => {
                 </Link>
                 <Link to="/profile" onClick={() => setIsOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start">
-                    <LayoutDashboard className="w-4 h-4 mr-2" />
                     Profile
                   </Button>
                 </Link>
@@ -121,6 +150,21 @@ export const Navbar = ({ isAuthenticated = false }: NavbarProps) => {
               </>
             ) : (
               <>
+                <Link to="/dashboard" onClick={() => setIsOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    Reports
+                  </Button>
+                </Link>
+                <Link to="/projects" onClick={() => setIsOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    Projects
+                  </Button>
+                </Link>
+                <Link to="/donations" onClick={() => setIsOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    Donate
+                  </Button>
+                </Link>
                 <Link to="/auth" onClick={() => setIsOpen(false)}>
                   <Button variant="ghost" className="w-full">Sign In</Button>
                 </Link>
