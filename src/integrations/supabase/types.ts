@@ -56,6 +56,54 @@ export type Database = {
           },
         ]
       }
+      donations: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string
+          donor_email: string | null
+          donor_name: string
+          id: string
+          is_anonymous: boolean | null
+          message: string | null
+          mobile_money_reference: string | null
+          payment_method: string
+          payment_status: string
+          stripe_session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string
+          donor_email?: string | null
+          donor_name: string
+          id?: string
+          is_anonymous?: boolean | null
+          message?: string | null
+          mobile_money_reference?: string | null
+          payment_method: string
+          payment_status?: string
+          stripe_session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string
+          donor_email?: string | null
+          donor_name?: string
+          id?: string
+          is_anonymous?: boolean | null
+          message?: string | null
+          mobile_money_reference?: string | null
+          payment_method?: string
+          payment_status?: string
+          stripe_session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -222,6 +270,65 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      volunteer_attendance: {
+        Row: {
+          check_in_time: string | null
+          check_out_time: string | null
+          created_at: string | null
+          id: string
+          project_id: string
+          qr_code: string
+          user_id: string
+        }
+        Insert: {
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string | null
+          id?: string
+          project_id: string
+          qr_code: string
+          user_id: string
+        }
+        Update: {
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string | null
+          id?: string
+          project_id?: string
+          qr_code?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "volunteer_attendance_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       votes: {
         Row: {
           created_at: string
@@ -263,9 +370,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "admin" | "volunteer" | "citizen"
       problem_type:
         | "roads"
         | "trash"
@@ -409,6 +523,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "volunteer", "citizen"],
       problem_type: [
         "roads",
         "trash",

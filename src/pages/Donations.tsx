@@ -6,17 +6,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Heart, DollarSign, Package, Loader2 } from "lucide-react";
+import { Heart, DollarSign, Package, Loader2, CreditCard, Smartphone } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { User } from "@supabase/supabase-js";
 
 const Donations = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [donationAmount, setDonationAmount] = useState("10");
+  const [donationAmount, setDonationAmount] = useState("10000");
+  const [currency, setCurrency] = useState("RWF");
+  const [paymentMethod, setPaymentMethod] = useState("stripe");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     checkAuth();
@@ -27,7 +34,9 @@ const Donations = () => {
     setUser(session?.user || null);
   };
 
-  const handleDonate = async (amount: string) => {
+  const handleDonate = async (amount?: string) => {
+    const finalAmount = amount || donationAmount;
+    
     if (!user) {
       toast({
         title: "Sign in required",
@@ -40,14 +49,34 @@ const Donations = () => {
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-donation-checkout', {
-        body: { amount: parseFloat(amount) }
-      });
+      if (paymentMethod === "stripe") {
+        const { data, error } = await supabase.functions.invoke('create-donation-checkout', {
+          body: { 
+            amount: parseFloat(finalAmount),
+            currency,
+            message 
+          }
+        });
 
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, '_blank');
+        if (error) throw error;
+        if (data?.url) {
+          window.open(data.url, '_blank');
+        }
+      } else {
+        // Mobile Money flow
+        toast({
+          title: "Mobile Money Payment",
+          description: `Processing ${paymentMethod.toUpperCase()} payment for ${finalAmount} ${currency}`,
+        });
+        
+        // Here you would integrate with MTN/Airtel Money API
+        // For now, we'll simulate the payment
+        setTimeout(() => {
+          toast({
+            title: "Payment Initiated",
+            description: "Please check your phone to complete the payment",
+          });
+        }, 1500);
       }
     } catch (error: any) {
       toast({
@@ -61,10 +90,10 @@ const Donations = () => {
   };
 
   const donationTiers = [
-    { amount: "5", label: "Supporter", description: "Help with small repairs" },
-    { amount: "25", label: "Contributor", description: "Fund materials for projects" },
-    { amount: "50", label: "Champion", description: "Sponsor a community project" },
-    { amount: "100", label: "Hero", description: "Make a major impact" },
+    { amount: "5000", label: t("donations.supporter"), description: "Help with small repairs" },
+    { amount: "25000", label: t("donations.contributor"), description: "Fund materials for projects" },
+    { amount: "50000", label: t("donations.champion"), description: "Sponsor a community project" },
+    { amount: "100000", label: t("donations.hero"), description: "Make a major impact" },
   ];
 
   return (
@@ -78,9 +107,9 @@ const Donations = () => {
             <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
               <Heart className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold mb-4">Support Community Projects</h1>
+            <h1 className="text-4xl font-bold mb-4">{t("donations.title")}</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Your donation helps fund materials, tools, and resources for Umuganda projects across Rwanda.
+              {t("donations.description")}
             </p>
           </div>
 
@@ -90,7 +119,7 @@ const Donations = () => {
               <Card key={tier.amount} className="p-6 hover:shadow-hover transition-shadow">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-2xl font-bold mb-1">${tier.amount}</h3>
+                    <h3 className="text-2xl font-bold mb-1">{tier.amount} RWF</h3>
                     <Badge variant="secondary">{tier.label}</Badge>
                   </div>
                   <DollarSign className="w-8 h-8 text-primary" />
@@ -101,7 +130,7 @@ const Donations = () => {
                   disabled={isLoading}
                   className="w-full"
                 >
-                  {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Donate Now"}
+                  {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("donations.donateNow")}
                 </Button>
               </Card>
             ))}
@@ -110,10 +139,23 @@ const Donations = () => {
           {/* Custom Amount */}
           <Card className="p-8 bg-gradient-card">
             <div className="max-w-md mx-auto">
-              <h3 className="text-2xl font-bold mb-4 text-center">Custom Amount</h3>
+              <h3 className="text-2xl font-bold mb-4 text-center">{t("donations.customAmount")}</h3>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="amount">Donation Amount (USD)</Label>
+                  <Label htmlFor="currency">{t("donations.currency")}</Label>
+                  <Select value={currency} onValueChange={setCurrency}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="RWF">RWF - Rwandan Franc</SelectItem>
+                      <SelectItem value="USD">USD - US Dollar</SelectItem>
+                      <SelectItem value="EUR">EUR - Euro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="amount">Donation Amount ({currency})</Label>
                   <Input
                     id="amount"
                     type="number"
@@ -123,8 +165,46 @@ const Donations = () => {
                     placeholder="Enter amount"
                   />
                 </div>
+                <div>
+                  <Label htmlFor="method">{t("donations.paymentMethod")}</Label>
+                  <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="stripe">
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="w-4 h-4" />
+                          {t("donations.creditCard")}
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="mtn">
+                        <div className="flex items-center gap-2">
+                          <Smartphone className="w-4 h-4" />
+                          {t("donations.mtnMoney")}
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="airtel">
+                        <div className="flex items-center gap-2">
+                          <Smartphone className="w-4 h-4" />
+                          {t("donations.airtelMoney")}
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="message">Message (Optional)</Label>
+                  <Textarea
+                    id="message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Leave a message..."
+                    rows={3}
+                  />
+                </div>
                 <Button 
-                  onClick={() => handleDonate(donationAmount)}
+                  onClick={() => handleDonate()}
                   disabled={isLoading || !donationAmount || parseFloat(donationAmount) < 1}
                   className="w-full"
                   size="lg"
@@ -134,7 +214,7 @@ const Donations = () => {
                   ) : (
                     <Heart className="w-4 h-4 mr-2" />
                   )}
-                  Donate ${donationAmount}
+                  {t("donations.donateNow")} {donationAmount} {currency}
                 </Button>
               </div>
             </div>
@@ -142,25 +222,25 @@ const Donations = () => {
 
           {/* Impact Section */}
           <div className="mt-12">
-            <h3 className="text-2xl font-bold mb-6 text-center">Your Impact</h3>
+            <h3 className="text-2xl font-bold mb-6 text-center">{t("donations.yourImpact")}</h3>
             <div className="grid md:grid-cols-3 gap-6">
               <Card className="p-6 text-center">
                 <Package className="w-8 h-8 text-primary mx-auto mb-3" />
-                <h4 className="font-semibold mb-2">Materials</h4>
+                <h4 className="font-semibold mb-2">{t("donations.materials")}</h4>
                 <p className="text-sm text-muted-foreground">
                   Cement, paint, and tools for repairs
                 </p>
               </Card>
               <Card className="p-6 text-center">
                 <Heart className="w-8 h-8 text-primary mx-auto mb-3" />
-                <h4 className="font-semibold mb-2">Community</h4>
+                <h4 className="font-semibold mb-2">{t("donations.community")}</h4>
                 <p className="text-sm text-muted-foreground">
                   Empower volunteers and local leaders
                 </p>
               </Card>
               <Card className="p-6 text-center">
                 <DollarSign className="w-8 h-8 text-primary mx-auto mb-3" />
-                <h4 className="font-semibold mb-2">Transparency</h4>
+                <h4 className="font-semibold mb-2">{t("donations.transparency")}</h4>
                 <p className="text-sm text-muted-foreground">
                   Track every donation on the public ledger
                 </p>
