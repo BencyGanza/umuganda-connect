@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Plus, Home, LayoutDashboard, LogOut } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Menu, X, Plus, Home, LayoutDashboard, LogOut, Shield, BookOpen, Globe } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface NavbarProps {
   isAuthenticated?: boolean;
@@ -12,8 +14,29 @@ interface NavbarProps {
 
 export const Navbar = ({ isAuthenticated = false }: NavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { language, setLanguage, t } = useLanguage();
+
+  useState(() => {
+    if (isAuthenticated) {
+      checkAdminStatus();
+    }
+  });
+
+  const checkAdminStatus = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id)
+        .eq("role", "admin")
+        .single();
+      setIsAdmin(!!data);
+    }
+  };
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -43,58 +66,89 @@ export const Navbar = ({ isAuthenticated = false }: NavbarProps) => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-4">
+            <Select value={language} onValueChange={(value: "en" | "rw") => setLanguage(value)}>
+              <SelectTrigger className="w-[120px]">
+                <Globe className="w-4 h-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="en">English</SelectItem>
+                <SelectItem value="rw">Kinyarwanda</SelectItem>
+              </SelectContent>
+            </Select>
+            
             {isAuthenticated ? (
               <>
                 <Link to="/dashboard">
                   <Button variant="ghost" size="sm">
                     <Home className="w-4 h-4 mr-2" />
-                    Dashboard
+                    {t("nav.dashboard")}
                   </Button>
                 </Link>
                 <Link to="/projects">
                   <Button variant="ghost" size="sm">
                     <LayoutDashboard className="w-4 h-4 mr-2" />
-                    Projects
+                    {t("nav.projects")}
                   </Button>
                 </Link>
                 <Link to="/donations">
                   <Button variant="ghost" size="sm">
-                    Donate
+                    {t("nav.donate")}
                   </Button>
                 </Link>
+                <Link to="/donation-ledger">
+                  <Button variant="ghost" size="sm">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    {t("nav.ledger")}
+                  </Button>
+                </Link>
+                {isAdmin && (
+                  <Link to="/admin">
+                    <Button variant="ghost" size="sm">
+                      <Shield className="w-4 h-4 mr-2" />
+                      {t("nav.admin")}
+                    </Button>
+                  </Link>
+                )}
                 <Link to="/submit-report">
                   <Button variant="default" size="sm">
                     <Plus className="w-4 h-4 mr-2" />
-                    Report Issue
+                    {t("nav.reportIssue")}
                   </Button>
                 </Link>
                 <Link to="/profile">
                   <Button variant="ghost" size="sm">
-                    Profile
+                    {t("nav.profile")}
                   </Button>
                 </Link>
                 <Button variant="ghost" size="sm" onClick={handleSignOut}>
                   <LogOut className="w-4 h-4 mr-2" />
-                  Sign Out
+                  {t("nav.signOut")}
                 </Button>
               </>
             ) : (
               <>
                 <Link to="/dashboard">
-                  <Button variant="ghost">Reports</Button>
+                  <Button variant="ghost">{t("nav.reports")}</Button>
                 </Link>
                 <Link to="/projects">
-                  <Button variant="ghost">Projects</Button>
+                  <Button variant="ghost">{t("nav.projects")}</Button>
                 </Link>
                 <Link to="/donations">
-                  <Button variant="ghost">Donate</Button>
+                  <Button variant="ghost">{t("nav.donate")}</Button>
+                </Link>
+                <Link to="/donation-ledger">
+                  <Button variant="ghost">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    {t("nav.ledger")}
+                  </Button>
                 </Link>
                 <Link to="/auth">
-                  <Button variant="ghost">Sign In</Button>
+                  <Button variant="ghost">{t("nav.signIn")}</Button>
                 </Link>
                 <Link to="/auth">
-                  <Button variant="default">Get Started</Button>
+                  <Button variant="default">{t("nav.getStarted")}</Button>
                 </Link>
               </>
             )}
@@ -113,63 +167,94 @@ export const Navbar = ({ isAuthenticated = false }: NavbarProps) => {
         {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden pb-4 space-y-2">
+            <Select value={language} onValueChange={(value: "en" | "rw") => setLanguage(value)}>
+              <SelectTrigger className="w-full mb-2">
+                <Globe className="w-4 h-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="en">English</SelectItem>
+                <SelectItem value="rw">Kinyarwanda</SelectItem>
+              </SelectContent>
+            </Select>
+            
             {isAuthenticated ? (
               <>
                 <Link to="/dashboard" onClick={() => setIsOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start">
                     <Home className="w-4 h-4 mr-2" />
-                    Dashboard
+                    {t("nav.dashboard")}
                   </Button>
                 </Link>
                 <Link to="/projects" onClick={() => setIsOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start">
                     <LayoutDashboard className="w-4 h-4 mr-2" />
-                    Projects
+                    {t("nav.projects")}
                   </Button>
                 </Link>
                 <Link to="/donations" onClick={() => setIsOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start">
-                    Donate
+                    {t("nav.donate")}
                   </Button>
                 </Link>
+                <Link to="/donation-ledger" onClick={() => setIsOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    {t("nav.ledger")}
+                  </Button>
+                </Link>
+                {isAdmin && (
+                  <Link to="/admin" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">
+                      <Shield className="w-4 h-4 mr-2" />
+                      {t("nav.admin")}
+                    </Button>
+                  </Link>
+                )}
                 <Link to="/submit-report" onClick={() => setIsOpen(false)}>
                   <Button variant="default" className="w-full justify-start">
                     <Plus className="w-4 h-4 mr-2" />
-                    Report Issue
+                    {t("nav.reportIssue")}
                   </Button>
                 </Link>
                 <Link to="/profile" onClick={() => setIsOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start">
-                    Profile
+                    {t("nav.profile")}
                   </Button>
                 </Link>
                 <Button variant="ghost" className="w-full justify-start" onClick={handleSignOut}>
                   <LogOut className="w-4 h-4 mr-2" />
-                  Sign Out
+                  {t("nav.signOut")}
                 </Button>
               </>
             ) : (
               <>
                 <Link to="/dashboard" onClick={() => setIsOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start">
-                    Reports
+                    {t("nav.reports")}
                   </Button>
                 </Link>
                 <Link to="/projects" onClick={() => setIsOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start">
-                    Projects
+                    {t("nav.projects")}
                   </Button>
                 </Link>
                 <Link to="/donations" onClick={() => setIsOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start">
-                    Donate
+                    {t("nav.donate")}
+                  </Button>
+                </Link>
+                <Link to="/donation-ledger" onClick={() => setIsOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    {t("nav.ledger")}
                   </Button>
                 </Link>
                 <Link to="/auth" onClick={() => setIsOpen(false)}>
-                  <Button variant="ghost" className="w-full">Sign In</Button>
+                  <Button variant="ghost" className="w-full">{t("nav.signIn")}</Button>
                 </Link>
                 <Link to="/auth" onClick={() => setIsOpen(false)}>
-                  <Button variant="default" className="w-full">Get Started</Button>
+                  <Button variant="default" className="w-full">{t("nav.getStarted")}</Button>
                 </Link>
               </>
             )}
