@@ -15,12 +15,14 @@ import type { User } from "@supabase/supabase-js";
 const SubmitReport = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [problemType, setProblemType] = useState<"roads" | "trash" | "water" | "electricity" | "school" | "health" | "other">("roads");
   const [severity, setSeverity] = useState<"low" | "medium" | "high" | "critical">("medium");
   const [location, setLocation] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
+  const [aiSuggestions, setAiSuggestions] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -43,6 +45,56 @@ const SubmitReport = () => {
     if (e.target.files) {
       const newPhotos = Array.from(e.target.files).slice(0, 5);
       setPhotos(newPhotos);
+    }
+  };
+
+  const analyzeWithAI = async () => {
+    if (!description || !user) return;
+
+    setIsAnalyzing(true);
+    try {
+      let photoUrl = null;
+      if (photos.length > 0) {
+        const photo = photos[0];
+        const fileExt = photo.name.split('.').pop();
+        const fileName = `temp-${user.id}-${Date.now()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('report-photos')
+          .upload(fileName, photo);
+
+        if (!uploadError) {
+          const { data: { publicUrl } } = supabase.storage
+            .from('report-photos')
+            .getPublicUrl(fileName);
+          photoUrl = publicUrl;
+        }
+      }
+
+      const { data, error } = await supabase.functions.invoke('analyze-problem', {
+        body: { description, photoUrl }
+      });
+
+      if (error) throw error;
+
+      if (data) {
+        setProblemType(data.problem_type);
+        setSeverity(data.severity);
+        setAiSuggestions(data.suggestions);
+        
+        toast({
+          title: "AI Analysis Complete",
+          description: "Problem details have been auto-filled based on AI analysis",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "AI Analysis Failed",
+        description: error.message || "Could not analyze the problem",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -146,6 +198,29 @@ const SubmitReport = () => {
                   rows={4}
                   required
                 />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={analyzeWithAI}
+                  disabled={!description || isAnalyzing}
+                  className="mt-2"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Analyzing with AI...
+                    </>
+                  ) : (
+                    "🤖 Analyze with AI"
+                  )}
+                </Button>
+                {aiSuggestions && (
+                  <div className="mt-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                    <p className="text-sm font-semibold text-primary mb-1">AI Suggestions:</p>
+                    <p className="text-sm text-muted-foreground">{aiSuggestions}</p>
+                  </div>
+                )}
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
