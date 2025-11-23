@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ThumbsUp, MapPin, MessageSquare, TrendingUp, Loader2 } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Report {
   id: string;
@@ -32,6 +33,7 @@ const Dashboard = () => {
   const [votedReports, setVotedReports] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     checkAuth();
@@ -65,7 +67,7 @@ const Dashboard = () => {
 
     if (error) {
       toast({
-        title: "Error loading reports",
+        title: t("dashboard.errorLoading"),
         description: error.message,
         variant: "destructive",
       });
@@ -100,7 +102,7 @@ const Dashboard = () => {
 
       if (error) {
         toast({
-          title: "Error removing vote",
+          title: t("dashboard.errorRemoving"),
           description: error.message,
           variant: "destructive",
         });
@@ -119,7 +121,7 @@ const Dashboard = () => {
 
       if (error) {
         toast({
-          title: "Error voting",
+          title: t("dashboard.errorVoting"),
           description: error.message,
           variant: "destructive",
         });
@@ -168,8 +170,8 @@ const Dashboard = () => {
       
       <div className="container mx-auto px-4 pt-24 pb-12">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Community Reports</h1>
-          <p className="text-muted-foreground">Vote on issues to help prioritize community action</p>
+          <h1 className="text-3xl font-bold mb-2">{t("dashboard.title")}</h1>
+          <p className="text-muted-foreground">{t("dashboard.subtitle")}</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -199,7 +201,7 @@ const Dashboard = () => {
                 <div className="flex items-center gap-2 mb-3 text-sm text-muted-foreground">
                   <MapPin className="w-4 h-4" />
                   <span className="truncate">
-                    {report.location_address || "Location not specified"}
+                    {report.location_address || t("dashboard.location")}
                   </span>
                 </div>
 
@@ -221,7 +223,7 @@ const Dashboard = () => {
                 </div>
 
                 <div className="mt-3 pt-3 border-t border-border text-xs text-muted-foreground">
-                  Reported by {report.profiles?.full_name || "Anonymous"}
+                  {t("dashboard.reportedBy")} {report.profiles?.full_name || t("dashboard.anonymous")}
                 </div>
               </div>
             </Card>
@@ -231,10 +233,10 @@ const Dashboard = () => {
         {reports.length === 0 && (
           <div className="text-center py-12">
             <TrendingUp className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No reports yet</h3>
-            <p className="text-muted-foreground mb-6">Be the first to report a community issue!</p>
+            <h3 className="text-xl font-semibold mb-2">{t("dashboard.noReports")}</h3>
+            <p className="text-muted-foreground mb-6">{t("dashboard.noReportsDesc")}</p>
             <Button onClick={() => navigate("/submit-report")}>
-              Submit Your First Report
+              {t("dashboard.submitFirst")}
             </Button>
           </div>
         )}
