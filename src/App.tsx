@@ -13,6 +13,7 @@ import Donations from "./pages/Donations";
 import Projects from "./pages/Projects";
 import AdminDashboard from "./pages/AdminDashboard";
 import DonationLedger from "./pages/DonationLedger";
+import Map from "./pages/Map";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/donations" element={<Donations />} />
             <Route path="/donation-ledger" element={<DonationLedger />} />
             <Route path="/projects" element={<Projects />} />
+            <Route path="/map" element={<Map />} />
             <Route path="/admin" element={<AdminDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
