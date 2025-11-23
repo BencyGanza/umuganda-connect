@@ -4,8 +4,11 @@ import { Card } from "@/components/ui/card";
 import { Navbar } from "@/components/Navbar";
 import { Camera, Users, TrendingUp, Award, MapPin, MessageSquare } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
+  const { t } = useLanguage();
+  
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -22,20 +25,20 @@ const Index = () => {
         <div className="container mx-auto relative z-10">
           <div className="max-w-3xl mx-auto text-center text-white">
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-              Umuganda Made Smart
+              {t("landing.hero.title")}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-white/90">
-              Report community problems, vote on priorities, track projects, and build a better Rwanda together.
+              {t("landing.hero.subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/auth">
                 <Button size="lg" variant="secondary" className="text-lg px-8">
-                  Get Started
+                  {t("landing.hero.getStarted")}
                 </Button>
               </Link>
               <Link to="/dashboard">
                 <Button size="lg" variant="outline" className="text-lg px-8 bg-white/10 hover:bg-white/20 text-white border-white/30">
-                  View Reports
+                  {t("landing.hero.viewReports")}
                 </Button>
               </Link>
             </div>
@@ -47,9 +50,9 @@ const Index = () => {
       <section className="py-20 px-4 bg-muted/30">
         <div className="container mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("landing.features.title")}</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Empowering communities to identify, prioritize, and solve problems together.
+              {t("landing.features.subtitle")}
             </p>
           </div>
 
@@ -58,9 +61,9 @@ const Index = () => {
               <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center mb-4">
                 <Camera className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Report Issues</h3>
+              <h3 className="text-xl font-semibold mb-2">{t("landing.features.report.title")}</h3>
               <p className="text-muted-foreground">
-                Snap a photo of community problems - roads, trash, water leaks - and submit instantly with location data.
+                {t("landing.features.report.desc")}
               </p>
             </Card>
 
@@ -68,9 +71,9 @@ const Index = () => {
               <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center mb-4">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Vote & Prioritize</h3>
+              <h3 className="text-xl font-semibold mb-2">{t("landing.features.vote.title")}</h3>
               <p className="text-muted-foreground">
-                Community votes determine which issues get tackled first. Most voted problems become official projects.
+                {t("landing.features.vote.desc")}
               </p>
             </Card>
 
@@ -78,9 +81,9 @@ const Index = () => {
               <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center mb-4">
                 <Users className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Join Projects</h3>
+              <h3 className="text-xl font-semibold mb-2">{t("landing.features.join.title")}</h3>
               <p className="text-muted-foreground">
-                Volunteer for Umuganda projects, track attendance with QR codes, and see real progress with before/after photos.
+                {t("landing.features.join.desc")}
               </p>
             </Card>
 
@@ -88,9 +91,9 @@ const Index = () => {
               <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center mb-4">
                 <MapPin className="w-6 h-6 text-accent-foreground" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Track Location</h3>
+              <h3 className="text-xl font-semibold mb-2">{t("landing.features.track.title")}</h3>
               <p className="text-muted-foreground">
-                Every report includes precise GPS coordinates, making it easy for authorities to locate and address issues.
+                {t("landing.features.track.desc")}
               </p>
             </Card>
 
@@ -98,9 +101,9 @@ const Index = () => {
               <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center mb-4">
                 <MessageSquare className="w-6 h-6 text-accent-foreground" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Collaborate</h3>
+              <h3 className="text-xl font-semibold mb-2">{t("landing.features.collaborate.title")}</h3>
               <p className="text-muted-foreground">
-                Comment on reports, suggest solutions, and stay updated on project progress in your community.
+                {t("landing.features.collaborate.desc")}
               </p>
             </Card>
 
@@ -108,9 +111,9 @@ const Index = () => {
               <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center mb-4">
                 <Award className="w-6 h-6 text-accent-foreground" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Earn Rewards</h3>
+              <h3 className="text-xl font-semibold mb-2">{t("landing.features.rewards.title")}</h3>
               <p className="text-muted-foreground">
-                Gain points and badges for reporting issues, volunteering, and helping build a better community.
+                {t("landing.features.rewards.desc")}
               </p>
             </Card>
           </div>
@@ -121,14 +124,14 @@ const Index = () => {
       <section className="py-20 px-4 bg-gradient-hero">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
-            Ready to Make a Difference?
+            {t("landing.cta.title")}
           </h2>
           <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto">
-            Join thousands of Rwandans working together to improve their communities through smart, coordinated action.
+            {t("landing.cta.subtitle")}
           </p>
           <Link to="/auth">
             <Button size="lg" variant="secondary" className="text-lg px-8">
-              Join Umuganda+ Today
+              {t("landing.cta.button")}
             </Button>
           </Link>
         </div>
@@ -137,7 +140,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-border">
         <div className="container mx-auto text-center text-muted-foreground">
-          <p>© 2025 Umuganda+. Building better communities together.</p>
+          <p>{t("landing.footer")}</p>
         </div>
       </footer>
     </div>

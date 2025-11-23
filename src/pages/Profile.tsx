@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Award, MapPin, TrendingUp, Loader2 } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Profile {
   full_name: string;
@@ -25,6 +26,7 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     checkAuth();
@@ -53,7 +55,7 @@ const Profile = () => {
 
     if (profileError) {
       toast({
-        title: "Error loading profile",
+        title: t("profile.errorLoading"),
         description: profileError.message,
         variant: "destructive",
       });
@@ -102,17 +104,17 @@ const Profile = () => {
               </div>
               
               <div className="flex-1">
-                <h1 className="text-3xl font-bold mb-2">{profile?.full_name || "User"}</h1>
+                <h1 className="text-3xl font-bold mb-2">{profile?.full_name || t("profile.user")}</h1>
                 <div className="flex items-center gap-2 text-muted-foreground mb-4">
                   <MapPin className="w-4 h-4" />
                   <span>
                     {profile?.district && profile?.sector
                       ? `${profile.sector}, ${profile.district}`
-                      : "Location not set"}
+                      : t("profile.locationNotSet")}
                   </span>
                 </div>
                 <Badge variant="outline" className="capitalize">
-                  {profile?.role || "citizen"}
+                  {profile?.role || t("profile.citizen")}
                 </Badge>
               </div>
 
@@ -120,7 +122,7 @@ const Profile = () => {
                 <div className="text-3xl font-bold text-primary mb-1">
                   {profile?.points || 0}
                 </div>
-                <div className="text-sm text-muted-foreground">Points</div>
+                <div className="text-sm text-muted-foreground">{t("profile.points")}</div>
               </div>
             </div>
           </Card>
@@ -133,7 +135,7 @@ const Profile = () => {
                 </div>
                 <div>
                   <div className="text-2xl font-bold">{reportCount}</div>
-                  <div className="text-sm text-muted-foreground">Reports Submitted</div>
+                  <div className="text-sm text-muted-foreground">{t("profile.reportsSubmitted")}</div>
                 </div>
               </div>
             </Card>
@@ -145,7 +147,7 @@ const Profile = () => {
                 </div>
                 <div>
                   <div className="text-2xl font-bold">{voteCount}</div>
-                  <div className="text-sm text-muted-foreground">Votes Cast</div>
+                  <div className="text-sm text-muted-foreground">{t("profile.votesCast")}</div>
                 </div>
               </div>
             </Card>
@@ -157,14 +159,14 @@ const Profile = () => {
                 </div>
                 <div>
                   <div className="text-2xl font-bold">{Array.isArray(profile?.badges) ? profile.badges.length : 0}</div>
-                  <div className="text-sm text-muted-foreground">Badges Earned</div>
+                  <div className="text-sm text-muted-foreground">{t("profile.badgesEarned")}</div>
                 </div>
               </div>
             </Card>
           </div>
 
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Achievements</h2>
+            <h2 className="text-xl font-semibold mb-4">{t("profile.achievements")}</h2>
             {profile?.badges && Array.isArray(profile.badges) && profile.badges.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {profile.badges.map((badge: any, index: number) => (
@@ -176,7 +178,7 @@ const Profile = () => {
               </div>
             ) : (
               <p className="text-muted-foreground text-center py-8">
-                No badges earned yet. Keep participating to earn achievements!
+                {t("profile.noBadges")}
               </p>
             )}
           </Card>

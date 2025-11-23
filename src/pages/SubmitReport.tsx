@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Camera, Loader2, MapPin } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const SubmitReport = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -25,6 +26,7 @@ const SubmitReport = () => {
   const [aiSuggestions, setAiSuggestions] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     checkAuth();
@@ -83,14 +85,14 @@ const SubmitReport = () => {
         setAiSuggestions(data.suggestions);
         
         toast({
-          title: "AI Analysis Complete",
-          description: "Problem details have been auto-filled based on AI analysis",
+          title: t("report.aiAnalysisComplete"),
+          description: t("report.aiAnalysisDesc"),
         });
       }
     } catch (error: any) {
       toast({
-        title: "AI Analysis Failed",
-        description: error.message || "Could not analyze the problem",
+        title: t("report.aiAnalysisFailed"),
+        description: error.message || t("report.aiAnalysisError"),
         variant: "destructive",
       });
     } finally {
@@ -103,8 +105,8 @@ const SubmitReport = () => {
     
     if (!user) {
       toast({
-        title: "Authentication required",
-        description: "Please sign in to submit a report",
+        title: t("report.authRequired"),
+        description: t("report.signInPrompt"),
         variant: "destructive",
       });
       return;
@@ -148,14 +150,14 @@ const SubmitReport = () => {
       if (insertError) throw insertError;
 
       toast({
-        title: "Report submitted!",
-        description: "Thank you for helping improve our community.",
+        title: t("report.submitted"),
+        description: t("report.thankYou"),
       });
 
       navigate("/dashboard");
     } catch (error: any) {
       toast({
-        title: "Error submitting report",
+        title: t("report.errorSubmitting"),
         description: error.message,
         variant: "destructive",
       });
@@ -171,17 +173,17 @@ const SubmitReport = () => {
       <div className="container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-2xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Report a Problem</h1>
-            <p className="text-muted-foreground">Help us identify and fix issues in our community</p>
+            <h1 className="text-3xl font-bold mb-2">{t("report.title")}</h1>
+            <p className="text-muted-foreground">{t("report.subtitle")}</p>
           </div>
 
           <Card className="p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="title">Issue Title*</Label>
+                <Label htmlFor="title">{t("report.issueTitle")}</Label>
                 <Input
                   id="title"
-                  placeholder="E.g., Pothole on Main Street"
+                  placeholder={t("report.issueTitlePlaceholder")}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
@@ -189,10 +191,10 @@ const SubmitReport = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description*</Label>
+                <Label htmlFor="description">{t("report.description")}</Label>
                 <Textarea
                   id="description"
-                  placeholder="Describe the problem in detail..."
+                  placeholder={t("report.descriptionPlaceholder")}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={4}
@@ -209,15 +211,15 @@ const SubmitReport = () => {
                   {isAnalyzing ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Analyzing with AI...
+                      {t("report.analyzing")}
                     </>
                   ) : (
-                    "🤖 Analyze with AI"
+                    t("report.analyzeAI")
                   )}
                 </Button>
                 {aiSuggestions && (
                   <div className="mt-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
-                    <p className="text-sm font-semibold text-primary mb-1">AI Suggestions:</p>
+                    <p className="text-sm font-semibold text-primary mb-1">{t("report.aiSuggestions")}</p>
                     <p className="text-sm text-muted-foreground">{aiSuggestions}</p>
                   </div>
                 )}
@@ -225,46 +227,46 @@ const SubmitReport = () => {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="problem-type">Problem Type*</Label>
+                  <Label htmlFor="problem-type">{t("report.problemType")}</Label>
                   <Select value={problemType} onValueChange={(value) => setProblemType(value as any)} required>
                     <SelectTrigger id="problem-type">
-                      <SelectValue placeholder="Select type" />
+                      <SelectValue placeholder={t("report.selectType")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="roads">Roads</SelectItem>
-                      <SelectItem value="trash">Trash/Waste</SelectItem>
-                      <SelectItem value="water">Water</SelectItem>
-                      <SelectItem value="electricity">Electricity</SelectItem>
-                      <SelectItem value="school">School</SelectItem>
-                      <SelectItem value="health">Health</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      <SelectItem value="roads">{t("report.roads")}</SelectItem>
+                      <SelectItem value="trash">{t("report.trash")}</SelectItem>
+                      <SelectItem value="water">{t("report.water")}</SelectItem>
+                      <SelectItem value="electricity">{t("report.electricity")}</SelectItem>
+                      <SelectItem value="school">{t("report.school")}</SelectItem>
+                      <SelectItem value="health">{t("report.health")}</SelectItem>
+                      <SelectItem value="other">{t("report.other")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="severity">Severity*</Label>
+                  <Label htmlFor="severity">{t("report.severity")}</Label>
                   <Select value={severity} onValueChange={(value) => setSeverity(value as any)}>
                     <SelectTrigger id="severity">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="critical">Critical</SelectItem>
+                      <SelectItem value="low">{t("report.low")}</SelectItem>
+                      <SelectItem value="medium">{t("report.medium")}</SelectItem>
+                      <SelectItem value="high">{t("report.high")}</SelectItem>
+                      <SelectItem value="critical">{t("report.critical")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
+                <Label htmlFor="location">{t("report.location")}</Label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                   <Input
                     id="location"
-                    placeholder="E.g., Kigali, Gasabo District, Remera Sector"
+                    placeholder={t("report.locationPlaceholder")}
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     className="pl-10"
@@ -273,7 +275,7 @@ const SubmitReport = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="photos">Photos (up to 5)</Label>
+                <Label htmlFor="photos">{t("report.photos")}</Label>
                 <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
                   <input
                     id="photos"
@@ -286,11 +288,11 @@ const SubmitReport = () => {
                   <label htmlFor="photos" className="cursor-pointer">
                     <Camera className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
                     <p className="text-sm text-muted-foreground">
-                      Click to upload photos
+                      {t("report.uploadPhotos")}
                     </p>
                     {photos.length > 0 && (
                       <p className="text-sm text-primary mt-2">
-                        {photos.length} photo{photos.length > 1 ? 's' : ''} selected
+                        {photos.length} {t("report.photosSelected")}
                       </p>
                     )}
                   </label>
@@ -301,10 +303,10 @@ const SubmitReport = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Submitting...
+                    {t("report.submitting")}
                   </>
                 ) : (
-                  "Submit Report"
+                  t("report.submit")
                 )}
               </Button>
             </form>
