@@ -103,6 +103,11 @@ export const Navbar = ({ isAuthenticated = false }: NavbarProps) => {
                     {t("nav.ledger")}
                   </Button>
                 </Link>
+                <Link to="/map">
+                  <Button variant="ghost" size="sm">
+                    {t("nav.map")}
+                  </Button>
+                </Link>
                 {isAdmin && (
                   <Link to="/admin">
                     <Button variant="ghost" size="sm">
@@ -143,6 +148,9 @@ export const Navbar = ({ isAuthenticated = false }: NavbarProps) => {
                     <BookOpen className="w-4 h-4 mr-2" />
                     {t("nav.ledger")}
                   </Button>
+                </Link>
+                <Link to="/map">
+                  <Button variant="ghost">{t("nav.map")}</Button>
                 </Link>
                 <Link to="/auth">
                   <Button variant="ghost">{t("nav.signIn")}</Button>
@@ -203,6 +211,11 @@ export const Navbar = ({ isAuthenticated = false }: NavbarProps) => {
                     {t("nav.ledger")}
                   </Button>
                 </Link>
+                <Link to="/map" onClick={() => setIsOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    {t("nav.map")}
+                  </Button>
+                </Link>
                 {isAdmin && (
                   <Link to="/admin" onClick={() => setIsOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start">
@@ -248,6 +261,11 @@ export const Navbar = ({ isAuthenticated = false }: NavbarProps) => {
                   <Button variant="ghost" className="w-full justify-start">
                     <BookOpen className="w-4 h-4 mr-2" />
                     {t("nav.ledger")}
+                  </Button>
+                </Link>
+                <Link to="/map" onClick={() => setIsOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    {t("nav.map")}
                   </Button>
                 </Link>
                 <Link to="/auth" onClick={() => setIsOpen(false)}>

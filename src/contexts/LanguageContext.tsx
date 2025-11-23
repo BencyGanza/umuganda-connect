@@ -22,6 +22,7 @@ const translations = {
     "nav.reports": "Reports",
     "nav.admin": "Admin",
     "nav.ledger": "Donation Ledger",
+    "nav.map": "Map",
     
     // Landing Page
     "landing.hero.title": "Umuganda Made Smart",
@@ -175,6 +176,10 @@ const translations = {
     "ledger.amount": "Amount",
     "ledger.date": "Date",
     "ledger.method": "Method",
+    
+    // Map
+    "map.title": "Community Map",
+    "map.subtitle": "View all reported issues and active projects on the map",
   },
   rw: {
     // Navbar
@@ -189,6 +194,7 @@ const translations = {
     "nav.reports": "Raporo",
     "nav.admin": "Ubuyobozi",
     "nav.ledger": "Ibitabo by'Impano",
+    "nav.map": "Ikarita",
     
     // Landing Page
     "landing.hero.title": "Umuganda Yateye Imbere",
@@ -342,6 +348,10 @@ const translations = {
     "ledger.amount": "Amafaranga",
     "ledger.date": "Itariki",
     "ledger.method": "Uburyo",
+    
+    // Map
+    "map.title": "Ikarita y'Abaturage",
+    "map.subtitle": "Reba ibibazo byose byatanzwe n'imishinga ikoranirwa kuri ikarita",
   },
 };
 
